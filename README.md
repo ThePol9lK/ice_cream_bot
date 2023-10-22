@@ -1,1 +1,1 @@
-# museum_bot
+# ice cream bot
