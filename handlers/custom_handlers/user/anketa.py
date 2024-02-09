@@ -30,10 +30,9 @@ def getting_true_email(message: Message):
     :return:
     """
     with bot.retrieve_data(message.from_user.id, message.chat.id) as data:
-        data["email"] = message.text
+        data["subject"] = message.text
     bot.set_state(message.from_user.id, Feedback.commit)
     bot.send_message(message.chat.id, "Напишите вашу почту")
-
 
 @bot.message_handler(func=None, state=Feedback.email)
 def getting_false_email(message: Message):
@@ -43,8 +42,9 @@ def getting_false_email(message: Message):
     :param message: Message
     :return:
     """
+    with bot.retrieve_data(message.from_user.id, message.chat.id) as data:
+        data["subject"] = message.text
     bot.send_message(message.chat.id, "Неправильно ввели почту")
-    bot.set_state(message.from_user.id, Feedback.commit)  # Установка состояния обратно на Feedback.commit
 
 
 @bot.message_handler(func=None, state=Feedback.commit)
@@ -55,9 +55,10 @@ def getting_comment(message: Message):
     :param message: Message
     :return:
     """
+    with bot.retrieve_data(message.from_user.id, message.chat.id) as data:
+        data["email"] = message.text
     bot.set_state(message.from_user.id, Feedback.feedback)
     bot.send_message(message.chat.id, "Напишите ваш отзыв")
-
 
 @bot.message_handler(func=None, state=Feedback.feedback)
 def send_email(message: Message):
