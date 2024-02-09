@@ -1,5 +1,6 @@
 import smtplib
 from email.mime.text import MIMEText
+import re
 
 from telebot.types import Message
 from config_data.config import EMAIL, PASSWORD_EMAIL
@@ -35,7 +36,7 @@ def getting_comment(message: Message):
         data["subject"] = message.text
 
 
-@bot.message_handler(func=None, state=Feedback.email)
+@bot.message_handler(func=None, state=Feedback.email, regexp="^[-\w\.]+@([-\w]+\.)+[-\w]{2,4}$")
 def getting_comment(message: Message):
     """
     Сохранение значения темы сообщения. Отлавливается через состояние Feedback.commit.
@@ -47,6 +48,17 @@ def getting_comment(message: Message):
         data["decs"] = message.text
     bot.set_state(message.from_user.id, Feedback.feedback)
     bot.send_message(message.chat.id, "Напишите вашу почту")
+
+@bot.message_handler(func=None, state=Feedback.email)
+def getting_comment(message: Message):
+    """
+    Сохранение значения темы сообщения. Отлавливается через состояние Feedback.commit.
+
+    :param message: Message
+    :return:
+    """
+    bot.send_message(message.chat.id, "Неправильно ввели почту")
+
 
 
 
